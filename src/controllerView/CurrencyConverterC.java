@@ -2,7 +2,9 @@ package controllerView;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import model.Currency;
 import model.CurrencyConverter;
 
 import java.net.URL;
@@ -21,7 +23,9 @@ public class CurrencyConverterC implements Initializable {
   private TextField txtEuro;
   @FXML
   private TextField txtYen;
-  
+  @FXML
+  private ChoiceBox currencies;
+
   private CurrencyConverter currencyConverter;
   
   private static final  NumberFormat DEC2FORMAT;
@@ -43,24 +47,25 @@ public class CurrencyConverterC implements Initializable {
   }
   
   /**
-   * Konvertierung Euro -> Yen
+   * Konvertierung Euro -> Currency
    */
   private void convert() {
     try {
-//    double euro = Double.parseDouble(txtEuro.getText());
       double euro = DEC2FORMAT.parse(txtEuro.getText()).doubleValue();
-      double yen = currencyConverter.euroToYen(euro);
-//    txtYen.setText(String.valueOf(yen));
-      txtYen.setText(DEC2FORMAT.format(yen));
+      double currency = currencyConverter.euroToCurrency((String)currencies.getValue(), euro);
+      txtYen.setText(DEC2FORMAT.format(currency));
     }
     catch (ParseException e) {
-      System.out.println(e.getMessage());
-//    txtMsg.setText(e.GetMessage);
+      System.out.println("Fehler bei der Umwandlung!");
     }
   }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     currencyConverter = new CurrencyConverter();
+    for (Currency c : currencyConverter.getCurrencyList()) {
+      currencies.getItems().add(c.getSign());
+    }
+    currencies.setValue("Zielwährung");
   }
 }
